@@ -1,5 +1,5 @@
 # powerhour
-Auto-generated playlist along with associated file utilities.
+Auto-generated music playlist along with associated file utilities.
 
 ## Installation
 
