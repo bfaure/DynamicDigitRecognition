@@ -1,6 +1,7 @@
 import sys
 from os import listdir
 from os.path import isfile, join
+import numpy as np
 
 from struct import *
 import time
@@ -58,6 +59,12 @@ class image():
 			print(line)
 		return True
 
+	def get_normalized_pixel_array(self):
+		temp = []
+		for pixel in self.pixels:
+			temp.append(pixel.value/255.0)
+		return temp
+
 # Read a single word from a file and return the decimal representation
 def read_word(file, index):
 	vals = []
@@ -113,13 +120,14 @@ def get_images(file, byte_offset, num_images):
 	return pictures
 
 # Loads a image and label set into memory
-def load_data(image_file="t10k-images.idx3-ubyte", label_file="t10k-labels.idx1-ubyte"):
+def load_data(limited, image_file="t10k-images.idx3-ubyte", label_file="t10k-labels.idx1-ubyte"):
 	directory = "data/mnist"
 	# List of every filename
 	files = listdir(directory)
 	# List of the paths to all the files
 	paths = []
 
+	# Create a list of full file paths to the files in the mnist directory
 	for file in files:
 		paths.append(directory+"/"+file)
 
@@ -145,8 +153,8 @@ def load_data(image_file="t10k-images.idx3-ubyte", label_file="t10k-labels.idx1-
 	#print("y_range = "+str(y_range))
 
 	t0 = time.time()
-	# Get the first several images
-	pictures = get_images(file1, 4, num_images)
+	# Get the images
+	pictures = get_images(file1, 4, 1000 if limited else num_images) # Third argument should be num_images
 	t1 = time.time()
 	image_read_time = t1-t0
 	# Now fetching the labels for the images	
@@ -157,24 +165,41 @@ def load_data(image_file="t10k-images.idx3-ubyte", label_file="t10k-labels.idx1-
 	magic,num_labels = read_words(file2, 0, 2)
 
 	#print("Magic = "+str(magic))
-	print("Label Count = "+str(num_labels))
+	print("Label Count = "+str(1000))
 
 	t0 = time.time()
 	# Getting the first several labels
-	labels = read_bytes(file2, 8, num_labels)
+	labels = read_bytes(file2, 8, 1000 if limited else num_labels) # Third argument should be num_labels
 	t1 = time.time()
 	label_read_time = t1-t0
 	#print(labels)
 	
 	for pic,label in list(zip(pictures,labels)):
 		pic.label = int(label)
-	
-
-	print("Image read time = "+str(image_read_time))
-	print("Label read time = "+str(label_read_time))
 
 	return pictures
 
+def convert_image_data(data):
+	image_weights = [] # List of 28x28 numpy matrices
+	image_labels = [] # List of 1x9 numpy matrices
+
+	# Iterate through each image in the input list
+	for image in data:
+		# Get a 784 length array of normalized values (0 to 1)
+		image_values = np.array(image.get_normalized_pixel_array())
+
+		# Reshape the data as a 1x28x28 matrix
+		image_values = image_values.reshape(1, 28, 28)
+		image_weights.append(image_values)
+
+		# Create a vector of zeroes of length 10 where the only 1 value pertains
+		# the label for the current image (1 at index 0 means image is a 0)
+		image_label = np.zeros(10) # Empty array of length 10
+		image_label[int(image.label)] = 1.0
+		image_labels.append(image_label)
+	
+	# Return parsed, normalized, reshapen lists
+	return image_weights, image_labels
 
 def main():
 	load_data()
