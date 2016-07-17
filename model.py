@@ -5,9 +5,11 @@ from keras.utils import np_utils
 from keras.optimizers import SGD
 from keras.models import model_from_json
 from os import listdir
+import numpy as np
 
 import time
 import os
+import data
 
 
 batch_size = 128
@@ -64,10 +66,29 @@ def save(model):
 	model.save_weights(dir + '/%s/data.h5' % t, overwrite=True)
 
 
-def load():
+def load(name):
 	dir = "model"
 	
 	model = model_from_json(open(dir + '/%s/meta.json' % name).read())
 	model.load_weights(dir + '/%s/data.h5' % name)
 	model.compile(optimizer='adadelta', loss='categorical_crossentropy', metrics=['accuracy'])
 	return model
+
+def visualize(model, images):
+
+	pixel_data, image_labels = data.convert_image_data(images[:100])
+	pixel_data = np.array(pixel_data)
+	image_labels = np.array(image_labels)
+
+	proba = model.predict_proba(pixel_data)
+
+	for i in range(100):
+		
+		image = images[i]
+		image.output_terminal()
+
+		for j in range(10):
+			print "Probability that digit is "+str(j)+" is "+str(proba[i][j])
+
+		
+

@@ -57,6 +57,7 @@ class image():
 						else:
 							line+="  "
 			print(line)
+		print "\nImage label = "+str(self.label)
 		return True
 
 	def get_normalized_pixel_array(self):

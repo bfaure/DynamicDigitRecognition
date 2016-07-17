@@ -1,10 +1,12 @@
 import data
 import model
+import os
 
 import numpy as np
 
-LIMITED = True # True if we want to restrict the data to 1000 images (debugging)
-LOAD = True # True if we want to load a prior saved model
+LIMITED 	= False # True if we want to restrict the data to 1000 images (debugging)
+LOAD 		= False # True if we want to load a prior saved model
+VISUALIZE 	= True # True if we want to view some results in the command prompt
 
 def main():
 
@@ -31,19 +33,24 @@ def main():
 	X_test = np.array(X_test)
 	Y_test = np.array(Y_test)
 
-	if LOAD = False:
+	if LOAD == False:
 		print "Building the model..."
 		_model = model.build()
 	else:
 		print "Loading the model..."
 		elements = os.listdir("model")
-		if len(elements == 0):
+		if len(elements) == 0:
 			print "No models to load."
 		else:
-			_model = model.load(elements[len(elements-1)])
+			_model = model.load(elements[len(elements)-1])
 
 	print "Training the model..."
 	model.train(_model, X_train, Y_train, X_test, Y_test)
+
+
+	if VISUALIZE:
+		model.visualize(_model, test_images)
+
 	print "Saving the model..."
 	model.save(_model)
 
