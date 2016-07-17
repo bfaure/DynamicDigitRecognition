@@ -74,8 +74,10 @@ def load(name):
 	model.compile(optimizer='adadelta', loss='categorical_crossentropy', metrics=['accuracy'])
 	return model
 
-def visualize(model, images):
+def visualize(model, images, to_file=False):
 
+
+	file = open("results.txt", "w")
 	pixel_data, image_labels = data.convert_image_data(images[:100])
 	pixel_data = np.array(pixel_data)
 	image_labels = np.array(image_labels)
@@ -85,10 +87,19 @@ def visualize(model, images):
 	for i in range(100):
 		
 		image = images[i]
-		image.output_terminal()
+
+		if to_file:
+			image.output_file(file)
+		else:
+			image.output_terminal()
+
 
 		for j in range(10):
-			print "Probability that digit is "+str(j)+" is "+str(proba[i][j])
+			line = "Probability that digit is "+str(j)+" is "+str(proba[i][j])
+			if to_file:
+				file.write(line+"\n")
+			else:
+				print(line)
 
 		
 

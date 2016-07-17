@@ -60,6 +60,24 @@ class image():
 		print "\nImage label = "+str(self.label)
 		return True
 
+	def output_file(self, file, threshold=20):
+		# Output a representation to file
+		if len(self.pixels) != 784:
+			return False
+		for y in range(28):
+			line = ""
+			for x in range(28):
+				for pixel in self.pixels:
+					if pixel.x_coord == x and pixel.y_coord == y:
+						if pixel.value > threshold:
+							line+=" X"
+						else:
+							line+="  "
+			file.write(line+"\n")
+		file.write("\nImage label = "+str(self.label)+"\n")
+		return True
+
+
 	def get_normalized_pixel_array(self):
 		temp = []
 		for pixel in self.pixels:
