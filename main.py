@@ -13,7 +13,6 @@ TRAIN 				= False # True if we want to retrain the net
 def main():
 
 	
-
 	# Training data consits of 60000 images and 60000 labels
 	# Testing data consists of 10000 images and 10000 labels
 
