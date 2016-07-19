@@ -19,7 +19,8 @@ Dataset for the MNIST images located at http://yann.lecun.com/exdb/mnist/
 
 Python (2.7) Modules: Keras, Theano/Tensorflow, PyQt4, NumPy, PyCuda
 
-## Example
+## GUI Prediction Examples
 ![Alt text](https://github.com/bfaure/Dynamic-Digit-Recognition/blob/master/data/screenshot_1.png)
-
+![Alt text](https://github.com/bfaure/Dynamic-Digit-Recognition/blob/master/data/screenshot_2.PNG)
+![Alt text](https://github.com/bfaure/Dynamic-Digit-Recognition/blob/master/data/screenshot_3.PNG)
 
