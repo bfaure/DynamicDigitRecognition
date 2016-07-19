@@ -6,11 +6,11 @@ gui.py (run as python gui.py) will open up the user interface and allow user to 
 There are several parameters in the main.py file which can be changed to alter the runtime effects...
 
 
-    LIMITED 			      = True # True if we want to restrict the data to 1000 images (debugging)
+    LIMITED 			        = True # True if we want to restrict the data to 1000 images (debugging)
     LOAD 				        = True # True if we want to load a prior saved model
-    VISUALIZE 			    = True # True if we want to view some results 
-    VISUALIZE_TO_FILE 	= True # True if we want to output the results to file rather than terminal
-    TRAIN 				      = False # True if we want to retrain the net
+    VISUALIZE 			        = True # True if we want to view some results 
+    VISUALIZE_TO_FILE 	        = True # True if we want to output the results to file rather than terminal
+    TRAIN 				        = False # True if we want to retrain the net
 
 
 ## Installation
@@ -25,3 +25,6 @@ Python (2.7) Modules: Keras, Theano/Tensorflow, PyQt4, NumPy, PyCuda
 ![Alt text](https://github.com/bfaure/Dynamic-Digit-Recognition/blob/master/data/screenshot_3.PNG)
 ![Alt text](https://github.com/bfaure/Dynamic-Digit-Recognition/blob/master/data/screenshot_4.PNG)
 
+## MNIST Image Parser
+
+The process I used to parse out the images from their files is restricted mostly to the data.py file. By default the data.py program will only parse out the first 1000 or so images and labels but this can be changed by setting the `limit` variable to false. Under this cirumstance the program will attempt to parse out all of the images and labels provided in the load_data parameters.
