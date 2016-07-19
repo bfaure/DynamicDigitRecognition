@@ -17,7 +17,7 @@ from scipy import ndimage
 import data
 import model
 
-SEARCH_DISTANCE = 5
+SEARCH_DISTANCE = 6
 
 def get_hit_proximity(x, y, x_vals, y_vals):
 
@@ -33,7 +33,6 @@ def get_hit_proximity(x, y, x_vals, y_vals):
 	for x_targ in x_search_range:
 		y_index = -SEARCH_DISTANCE
 		for y_targ in y_search_range:
-
 			for x_val,y_val in list(zip(x_vals, y_vals)):
 				if x_val==x_targ and y_val==y_targ:
 					proximity = abs(x_index*y_index)
@@ -69,8 +68,11 @@ class execution_thread(QThread):
 		self.x_pos = self.cur_data.x_pos
 		self.y_pos = self.cur_data.y_pos
 
-		proximity_levels = [150.0, 130.0, 90.0, 45.0, 30.0, 25, 20, 15, 10, 5, 1]
-		proximity_depths = [25.0, 30.0, 40.0, 50.0, 80.0, 100.0, 150.0, 175.0, 200.0, 225.0, 255.0]
+		#proximity_levels = [150.0, 130.0, 90.0, 45.0, 30.0, 25, 20, 15, 10, 5, 1]
+		#proximity_depths = [25.0, 30.0, 40.0, 50.0, 80.0, 100.0, 150.0, 175.0, 200.0, 225.0, 255.0]
+
+		proximity_depths = [80.0, 100.0, 120.0, 160.0, 180.0, 200.0, 220.0, 255.0]
+		proximity_levels = [8, 7, 6, 5, 4, 3, 2, 1]
 
 
 
@@ -152,7 +154,6 @@ class execution_thread(QThread):
 		highest_prob = 0.0
 		cur_index = 0
 		highest_prob_index = 0
-		print(proba)
 		for probability in proba[0]:
 			if probability > highest_prob:
 				highest_prob = probability
