@@ -17,7 +17,7 @@ There are several parameters in the main.py file which can be changed to alter t
 
 Dataset for the MNIST images located at http://yann.lecun.com/exdb/mnist/
 
-Python Modules: Keras, Theano/Tensorflow
+Python (2.7) Modules: Keras, Theano/Tensorflow, PyQt4, NumPy, PyCuda
 
 ## Example
 ![Alt text](https://github.com/bfaure/Dynamic-Digit-Recognition/blob/master/data/screenshot_1.png)
