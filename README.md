@@ -5,13 +5,13 @@ gui.py (run as python gui.py) will open up the user interface and allow user to 
 
 There are several parameters in the main.py file which can be changed to alter the runtime effects...
 
-'''python
-LIMITED 			      = True # True if we want to restrict the data to 1000 images (debugging)
-LOAD 				        = True # True if we want to load a prior saved model
-VISUALIZE 			    = True # True if we want to view some results 
-VISUALIZE_TO_FILE 	= True # True if we want to output the results to file rather than terminal
-TRAIN 				      = False # True if we want to retrain the net
-'''
+
+    LIMITED 			      = True # True if we want to restrict the data to 1000 images (debugging)
+    LOAD 				        = True # True if we want to load a prior saved model
+    VISUALIZE 			    = True # True if we want to view some results 
+    VISUALIZE_TO_FILE 	= True # True if we want to output the results to file rather than terminal
+    TRAIN 				      = False # True if we want to retrain the net
+
 
 ## Installation
 
