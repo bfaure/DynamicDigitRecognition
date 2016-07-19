@@ -10,13 +10,14 @@ import sys
 import os
 import numpy as np
 from math import ceil,floor
+from scipy import ndimage
 
 # Modules pertaining to the Keras implementation
 #import main
 import data
 import model
 
-SEARCH_DISTANCE = 13
+SEARCH_DISTANCE = 5
 
 def get_hit_proximity(x, y, x_vals, y_vals):
 
@@ -65,16 +66,13 @@ class execution_thread(QThread):
 	def process_data(self):
 		self.emit(SIGNAL("send_update(QString)"), "Constructing Image...")
 		
-		#input_image = data.image()
-		#input_image.construct_from_path(self.cur_data)
-		#input_image.output_terminal()
-
-		#self.cur_data.print_path()
 		self.x_pos = self.cur_data.x_pos
 		self.y_pos = self.cur_data.y_pos
 
 		proximity_levels = [150.0, 130.0, 90.0, 45.0, 30.0, 25, 20, 15, 10, 5, 1]
 		proximity_depths = [25.0, 30.0, 40.0, 50.0, 80.0, 100.0, 150.0, 175.0, 200.0, 225.0, 255.0]
+
+
 
 		smallest_x 	= 1000
 		largest_x 	= 0
@@ -106,10 +104,12 @@ class execution_thread(QThread):
 
 		new_image = data.image()
 
+
+
 		for x in range(28):
 			x_upscaled = (x-4)*x_scale
 			
-			if x < 4 or x > 24:
+			if x < 5 or x > 25:
 				x_skip = True
 			else:
 				x_skip = False
@@ -122,7 +122,7 @@ class execution_thread(QThread):
 					new_image.add_pixel_XY(0.0, x, y)
 					continue
 
-				if y < 4 or y > 24:
+				if y < 5 or y > 25:
 					new_image.add_pixel_XY(0.0, x, y)
 					continue
 				
@@ -152,7 +152,7 @@ class execution_thread(QThread):
 		highest_prob = 0.0
 		cur_index = 0
 		highest_prob_index = 0
-		#print(proba)
+		print(proba)
 		for probability in proba[0]:
 			if probability > highest_prob:
 				highest_prob = probability
@@ -306,6 +306,7 @@ class window(QtGui.QWidget):
 	def mousePressEvent(self, event):
 		x = event.x()
 		y = event.y()
+		self.path.clear_path()
 
 		if 100 < y < 500:
 			if 25 < x < 425:
@@ -367,7 +368,7 @@ class window(QtGui.QWidget):
 		self.mouseHeld = False
 		self.results.setText("Processing Data...")
 		self.emit(SIGNAL("send_data(PyQt_PyObject)"), self.path)
-		self.path.clear_path()
+		#self.path.clear_path()
 
 	def update_label(self, text):
 		self.results.setText(text)
