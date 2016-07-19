@@ -16,7 +16,7 @@ from math import ceil,floor
 import data
 import model
 
-SEARCH_DISTANCE = 10
+SEARCH_DISTANCE = 13
 
 def get_hit_proximity(x, y, x_vals, y_vals):
 
@@ -58,6 +58,7 @@ class execution_thread(QThread):
 			if name_val > newest:
 				newest = name_val
 
+		print "Loading model "+str(newest)
 		# newest will now hold the name of the newest model in the directory
 		self.cur_model = model.load(newest) # Loading in the model
 
@@ -72,8 +73,8 @@ class execution_thread(QThread):
 		self.x_pos = self.cur_data.x_pos
 		self.y_pos = self.cur_data.y_pos
 
-		proximity_levels = [90.0, 45.0, 30.0, 25, 20, 15, 10, 5, 1]
-		proximity_depths = [30, 50.0, 80.0, 100.0, 150.0, 175.0, 200.0, 225.0, 255.0]
+		proximity_levels = [150.0, 130.0, 90.0, 45.0, 30.0, 25, 20, 15, 10, 5, 1]
+		proximity_depths = [25.0, 30.0, 40.0, 50.0, 80.0, 100.0, 150.0, 175.0, 200.0, 225.0, 255.0]
 
 		smallest_x 	= 1000
 		largest_x 	= 0
