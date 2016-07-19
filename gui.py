@@ -9,11 +9,40 @@ from PyQt4.QtGui import *
 import sys
 import os
 import numpy as np
+from math import ceil,floor
 
 # Modules pertaining to the Keras implementation
 #import main
 import data
 import model
+
+SEARCH_DISTANCE = 10
+
+def get_hit_proximity(x, y, x_vals, y_vals):
+
+	x_search_range = []
+	y_search_range = []
+
+	for i in range(SEARCH_DISTANCE*2):
+		x_search_range.append(SEARCH_DISTANCE+x-i)
+		y_search_range.append(SEARCH_DISTANCE+y-i)
+
+	x_index = -SEARCH_DISTANCE
+	best = 1000
+	for x_targ in x_search_range:
+		y_index = -SEARCH_DISTANCE
+		for y_targ in y_search_range:
+
+			for x_val,y_val in list(zip(x_vals, y_vals)):
+				if x_val==x_targ and y_val==y_targ:
+					proximity = abs(x_index*y_index)
+					if proximity < best:
+						best = proximity
+			y_index += 1
+		x_index += 1
+
+	return best
+
 
 class execution_thread(QThread):
 	# Thread to handle the calculations and inferface with the Keras classification modules.
@@ -34,12 +63,86 @@ class execution_thread(QThread):
 
 	def process_data(self):
 		self.emit(SIGNAL("send_update(QString)"), "Constructing Image...")
-		input_image = data.image()
-		input_image.construct_from_path(self.cur_data)
-		input_image.output_terminal()
+		
+		#input_image = data.image()
+		#input_image.construct_from_path(self.cur_data)
+		#input_image.output_terminal()
 
-		'''
-		image,_ = data.convert_image_data([input_image])
+		#self.cur_data.print_path()
+		self.x_pos = self.cur_data.x_pos
+		self.y_pos = self.cur_data.y_pos
+
+		proximity_levels = [90.0, 45.0, 30.0, 25, 20, 15, 10, 5, 1]
+		proximity_depths = [30, 50.0, 80.0, 100.0, 150.0, 175.0, 200.0, 225.0, 255.0]
+
+		smallest_x 	= 1000
+		largest_x 	= 0
+		smallest_y 	= 1000
+		largest_y 	= 0
+
+		for x,y in list(zip(self.x_pos, self.y_pos)):
+			if x > largest_x:
+				largest_x = x
+			if x < smallest_x:
+				smallest_x = x
+			if y > largest_y:
+				largest_y = y
+			if y < smallest_y:
+				smallest_y = y
+
+		translated_x = []
+		translated_y = []
+
+		for x,y in list(zip(self.x_pos, self.y_pos)):
+			translated_x.append(x-smallest_x)
+			translated_y.append(y-smallest_y)
+
+		x_size = largest_x - smallest_x
+		y_size = largest_y - smallest_y
+
+		x_scale = int(ceil(float(x_size/20)))
+		y_scale = int(ceil(float(y_size/20)))
+
+		new_image = data.image()
+
+		for x in range(28):
+			x_upscaled = (x-4)*x_scale
+			
+			if x < 4 or x > 24:
+				x_skip = True
+			else:
+				x_skip = False
+			
+
+
+			for y in range(28):
+				
+				if x_skip:
+					new_image.add_pixel_XY(0.0, x, y)
+					continue
+
+				if y < 4 or y > 24:
+					new_image.add_pixel_XY(0.0, x, y)
+					continue
+				
+
+				
+				y_upscaled = (y-4)*y_scale
+
+				level = get_hit_proximity(x_upscaled, y_upscaled, translated_x, translated_y)
+				value = 0.0
+
+				for levels, depths in list(zip(proximity_levels, proximity_depths)):
+
+					if level <= levels:
+						value = depths
+
+				new_image.add_pixel_XY(value, x, y)
+
+		new_image.output_terminal()
+		new_image.label = 0
+
+		image,_ = data.convert_image_data([new_image])
 
 		image = np.array(image)
 
@@ -57,27 +160,67 @@ class execution_thread(QThread):
 
 		self.emit(SIGNAL("send_update(QString)"), "Digit is a "+str(highest_prob_index)+" with probability of "+str(highest_prob))
 		return
-		'''
 		
-
-
-
+		
 	def get_data(self, path):
 		# Need to figure out the bounds of the image (the maximums in all directions)
 		self.cur_data = path
 		self.process_data()
-
 
 class drawing_path():
 	def __init__(self):
 		self.x_pos = []
 		self.y_pos = []
 	def add_point(self, x, y):
+		# Adds a single point to the path
 		self.x_pos.append(x)
 		self.y_pos.append(y)
 	def clear_path(self):
+		# Clears both the x and y components of the path
 		self.x_pos = []
 		self.y_pos = []
+	def print_path(self):
+		# Outputs a represenation of the path to the terminal
+		smallest_x 	= 1000
+		largest_x 	= 0
+		smallest_y 	= 1000
+		largest_y 	= 0
+
+		for x,y in list(zip(self.x_pos, self.y_pos)):
+			if x > largest_x:
+				largest_x = x
+			if x < smallest_x:
+				smallest_x = x
+			if y > largest_y:
+				largest_y = y
+			if y < smallest_y:
+				smallest_y = y
+
+		translated_x = []
+		translated_y = []
+
+		for x,y in list(zip(self.x_pos, self.y_pos)):
+			translated_x.append(x-smallest_x)
+			translated_y.append(y-smallest_y)
+
+		x_size = largest_x - smallest_x
+		y_size = largest_y - smallest_y
+
+		for y in range(y_size):
+			line = ""
+			for x in range(x_size):
+				isPixel = False
+				for x_coor,y_coor in list(zip(translated_x, translated_y)):
+					if isPixel == False:
+						if x_coor==x and y_coor==y:
+							line += "X"
+							isPixel = True
+				if isPixel == False:
+					line += "  "
+			print(line)
+
+
+
 
 class window(QtGui.QWidget):
 	# Window to allow user to input hand written digits for the system to analyze.
@@ -128,6 +271,27 @@ class window(QtGui.QWidget):
 		self.clear_button = QtGui.QPushButton("Clear", self)
 		self.clear_button.move(330, 535)
 		self.clear_button.clicked.connect(self.clear)
+
+		self.upper_line = QtGui.QFrame(self)
+		self.upper_line.setFrameShape(QFrame.HLine)
+		self.upper_line.move(25, 85)
+		self.upper_line.setFixedWidth(400)
+
+		self.lower_line = QtGui.QFrame(self)
+		self.lower_line.setFrameShape(QFrame.HLine)
+		self.lower_line.move(25, 485)
+		self.lower_line.setFixedWidth(400)
+
+		self.left_line = QtGui.QFrame(self)
+		self.left_line.setFrameShape(QFrame.VLine)
+		self.left_line.move(-25, 100)
+		self.left_line.setFixedHeight(400)
+
+		self.right_line = QtGui.QFrame(self)
+		self.right_line.setFrameShape(QFrame.VLine)
+		self.right_line.move(375, 100)
+		self.right_line.setFixedHeight(400)
+
 
 		QtCore.QObject.connect(self, QtCore.SIGNAL("send_data(PyQt_PyObject)"), self.thread.get_data)
 		QtCore.QObject.connect(self.thread, QtCore.SIGNAL("send_update(QString)"), self.update_label)

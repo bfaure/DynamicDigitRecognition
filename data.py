@@ -31,6 +31,12 @@ class image():
 		self.pixels.append(temp)
 		return True
 
+	def add_pixel_struct(self, pixel):
+		if len(self.pixels) == 784:
+			print "Image is already full"
+			return False
+		self.pixels.append(pixel)
+
 	def add_pixel(self, value, index):
 		# We are returning false if the image is already full
 		if len(self.pixels) == 784:
@@ -43,82 +49,6 @@ class image():
 		temp.y_coord = y_coord
 		self.pixels.append(temp)
 		return True
-
-	def construct_from_path(self, path):
-		# Given a path of some 2-D coordinate data of some arbitrary length we need to convert
-		# into the regular data format found in the image data structure. The each element in the
-		# list consists of an x coordinate and a y coordinate and pertains to a location where the
-		# user dragged the line in the GUI window.
-		smallest_x = 1000
-		smallest_y = 1000
-		largest_x = 0
-		largest_y = 0
-
-		for x,y in list(zip(path.x_pos, path.y_pos)):
-			if x < smallest_x:
-				smallest_x = float(x)
-			if y < smallest_y: 
-				smallest_y = float(y)
-			if x > largest_x:
-				largest_x = float(x)
-			if y > largest_y:
-				largest_y = float(y)
-
-		x_size = largest_x-smallest_x
-		y_size = largest_y-smallest_y
-
-		centered_x = []
-		centered_y = []
-
-		for x,y in list(zip(path.x_pos, path.y_pos)):
-			centered_x.append(float(x - float((x_size/2))))
-			centered_y.append(float(y - float((y_size/2))))
-
-		scale = float(max(x_size, y_size))
-
-		scaled_x = []
-		scaled_y = []
-
-		for x,y in list(zip(centered_x, centered_y)):
-			scaled_x.append(float(x/scale))
-			scaled_y.append(float(y/scale))
-
-		translated_x = []
-		translated_y = []
-
-		for x,y in list(zip(scaled_x, scaled_y)):
-			translated_x.append(x+0.5)
-			translated_y.append(y+0.5)
-
-		self.pixels = []
-
-		index = 0
-		for x in range(28):
-			for y in range(28):
-				cur_pixel = pixel()
-				cur_pixel.x_coord = x
-				cur_pixel.y_coord = y
-				for cur_x,cur_y in list(zip(x_coor, y_coor)):
-					if abs(cur_x - x) < 6.0 and abs(cur_y - y) < 6.0:
-						cur_pixel.value = 50.0
-					if abs(cur_x - x) < 6.0 and abs(cur_y - y) < 6.0:
-						cur_pixel.value = 80.0
-					if abs(cur_x - x) < 5.0 and abs(cur_y - y) < 5.0:
-						cur_pixel.value = 100.0
-					elif abs(cur_x - x) < 4.0 and abs(cur_y - y) < 4.0:
-						cur_pixel.value = 150.0
-					elif abs(cur_x - x) < 3.0 and abs(cur_y - y) < 3.0:
-						cur_pixel.value = 180.0
-					elif abs(cur_x - x) < 2.0 and abs(cur_y - y) < 2.0:
-						cur_pixel.value = 220.0
-					elif abs(cur_x - x) < 1.0 and abs(cur_y - y) < 1.0:
-						cur_pixel.value = 255.0
-					else:
-						cur_pixel.value = 0.0
-				self.pixels.append(cur_pixel)
-
-		self.label = 0
-		'''
 	
 
 	def output_terminal(self, threshold=20):
